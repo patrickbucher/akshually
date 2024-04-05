@@ -1,8 +1,5 @@
 use std::io;
-use std::io::Error;
 use std::io::Write;
-use std::result::Result;
-use std::str::FromStr;
 
 pub fn round_to(value: f64, granularity: f64) -> f64 {
     let scale_factor = 1.0 / granularity;
@@ -12,19 +9,17 @@ pub fn round_to(value: f64, granularity: f64) -> f64 {
     scaled_down
 }
 
-pub fn prompt_line<T: FromStr<Err = std::io::Error>>(prompt: &str) -> Result<T, Error> {
+pub fn prompt_line<T: std::str::FromStr>(prompt: &str) -> Option<T> {
     print!("{prompt}");
-    io::stdout().flush()?;
-    let mut input = String::new();
-    io::stdin().read_line(&mut input)?;
-
-    // FIXME: why does this fail?
-    // input.parse()?
-
-    match input.parse() {
-        Ok(val) => Ok(val),
-        Err(err) => Err(err),
+    if let Ok(_) = io::stdout().flush() {
+        let mut input = String::new();
+        io::stdin().read_line(&mut input).ok()?;
+        return match input.parse() {
+            Ok(val) => Some(val),
+            Err(_) => None,
+        };
     }
+    None
 }
 
 #[cfg(test)]
