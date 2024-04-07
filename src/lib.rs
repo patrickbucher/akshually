@@ -14,7 +14,7 @@ pub fn prompt_line<T: std::str::FromStr>(prompt: &str) -> Option<T> {
     if let Ok(_) = io::stdout().flush() {
         let mut input = String::new();
         io::stdin().read_line(&mut input).ok()?;
-        return match input.parse() {
+        return match input.trim().parse() {
             Ok(val) => Some(val),
             Err(_) => None,
         };
