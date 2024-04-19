@@ -180,11 +180,11 @@ mod tests {
 
     #[test]
     fn factorize_1000000000() {
-        let factors = factorize(1000000000);
-        assert_eq!(
-            factors,
-            vec![2, 2, 2, 2, 2, 2, 2, 2, 2, 5, 5, 5, 5, 5, 5, 5, 5, 5]
-        );
+        let number = 1000000000;
+        let expected = vec![2, 2, 2, 2, 2, 2, 2, 2, 2, 5, 5, 5, 5, 5, 5, 5, 5, 5];
+        let factors = factorize(number);
+        assert_eq!(factors, expected);
+        assert_eq!(number, factors.iter().fold(1, |x, acc| x * acc));
     }
 
     #[test]
