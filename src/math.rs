@@ -101,11 +101,22 @@ pub fn factorize(n: u64) -> Vec<u64> {
 /// assert_eq!(akshually::math::reduce_fraction(32, 64), (1, 2));
 /// ```
 pub fn reduce_fraction(numerator: u64, denominator: u64) -> (u64, u64) {
-    let num_factors = factorize(numerator);
-    let den_factors = factorize(denominator);
+    let divider = gcd(numerator, denominator);
+    (numerator / divider, denominator / divider)
+}
+
+/// Finds the GCD of `a` and `b`.
+///
+/// Examples:
+///
+/// ```
+/// assert_eq!(akshually::math::gcd(48, 36), 12);
+/// ```
+pub fn gcd(a: u64, b: u64) -> u64 {
+    let num_factors = factorize(a);
+    let den_factors = factorize(b);
     let common = common_items(num_factors, den_factors);
-    let gcd = common.iter().fold(1, |x, acc| x * acc);
-    (numerator / gcd, denominator / gcd)
+    common.iter().fold(1, |x, acc| x * acc)
 }
 
 fn common_items(left: Vec<u64>, right: Vec<u64>) -> Vec<u64> {
@@ -205,5 +216,20 @@ mod tests {
     #[test]
     fn reduce_136_over_150() {
         assert_eq!(reduce_fraction(136, 150), (68, 75));
+    }
+
+    #[test]
+    fn no_gcd_of_primes() {
+        assert_eq!(gcd(13, 17), 1);
+    }
+
+    #[test]
+    fn gcd_of_same_number() {
+        assert_eq!(gcd(13, 13), 13);
+    }
+
+    #[test]
+    fn gcd_of_same_sequence() {
+        assert_eq!(gcd(24, 36), 12);
     }
 }
