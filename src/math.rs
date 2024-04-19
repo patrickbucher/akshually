@@ -93,7 +93,7 @@ pub fn factorize(n: u64) -> Vec<u64> {
     factors
 }
 
-pub fn reduce_fraction(numerator: i64, denominator: i64) -> (i64, i64) {
+pub fn reduce_fraction(numerator: u64, denominator: u64) -> (u64, u64) {
     let num_factors = factorize(numerator);
     let den_factors = factorize(denominator);
 
@@ -117,7 +117,7 @@ pub fn reduce_fraction(numerator: i64, denominator: i64) -> (i64, i64) {
         };
         match x.cmp(y) {
             Ordering::Equal => {
-                common.push(x);
+                common.push(*x);
                 l = left.next();
                 r = left.next();
             }
@@ -130,13 +130,13 @@ pub fn reduce_fraction(numerator: i64, denominator: i64) -> (i64, i64) {
         }
     }
 
-    let factor = common.iter().reduce(|x, acc| x * acc);
-    (numerator / factor, denominator / factor)
+    let gcd = common.iter().fold(1, |x, acc| x * acc);
+    (numerator / gcd, denominator / gcd)
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::math::{factorize, round_to, PrimeIterator};
+    use crate::math::{factorize, round_to, PrimeIterator, reduce_fraction};
 
     #[test]
     fn round_to_nickel() {
@@ -170,5 +170,11 @@ mod tests {
     fn factorize_1000000001() {
         let factors = factorize(1000000001);
         assert_eq!(factors, vec![7, 11, 13, 19, 52579]);
+    }
+
+    #[test]
+    fn reduce_factors() {
+        assert_eq!(reduce_fraction(18, 6), (3, 1));
+        assert_eq!(reduce_fraction(136, 150), (68, 75));
     }
 }
