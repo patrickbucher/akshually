@@ -1,3 +1,5 @@
+use std::cmp::Ordering;
+
 /// Rounds the `value` with the specified `granularity`.
 ///
 /// # Examples
@@ -89,6 +91,47 @@ pub fn factorize(n: u64) -> Vec<u64> {
         }
     }
     factors
+}
+
+pub fn reduce_fraction(numerator: i64, denominator: i64) -> (i64, i64) {
+    let num_factors = factorize(numerator);
+    let den_factors = factorize(denominator);
+
+    let mut common: Vec<u64> = Vec::new();
+    let mut left = num_factors.iter();
+    let mut right = num_factors.iter();
+    let mut l = left.next();
+    let mut r = right.next();
+    loop {
+        let x = match l {
+            Some(n) => n,
+            None => {
+                break;
+            }
+        };
+        let y = match r {
+            Some(n) => n,
+            None => {
+                break;
+            }
+        };
+        match x.cmp(y) {
+            Ordering::Equal => {
+                common.push(x);
+                l = left.next();
+                r = left.next();
+            }
+            Ordering::Less => {
+                l = left.next();
+            }
+            Ordering::Greater => {
+                r = left.next();
+            }
+        }
+    }
+
+    let factor = common.iter().reduce(|x, acc| x * acc);
+    (numerator / factor, denominator / factor)
 }
 
 #[cfg(test)]
