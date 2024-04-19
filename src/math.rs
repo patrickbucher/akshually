@@ -152,7 +152,6 @@ fn common_items(left: Vec<u64>, right: Vec<u64>) -> Vec<u64> {
             }
         }
     }
-
     common
 }
 
