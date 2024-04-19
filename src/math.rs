@@ -93,13 +93,25 @@ pub fn factorize(n: u64) -> Vec<u64> {
     factors
 }
 
+/// Reduces the fraction `numerator`/`denominator` using their GCD.
+///
+/// Examples:
+///
+/// ```
+/// assert_eq!(akshually::math::reduce_fraction(32, 64), (1, 2));
+/// ```
 pub fn reduce_fraction(numerator: u64, denominator: u64) -> (u64, u64) {
     let num_factors = factorize(numerator);
     let den_factors = factorize(denominator);
+    let common = common_items(num_factors, den_factors);
+    let gcd = common.iter().fold(1, |x, acc| x * acc);
+    (numerator / gcd, denominator / gcd)
+}
 
+fn common_items(left: Vec<u64>, right: Vec<u64>) -> Vec<u64> {
     let mut common: Vec<u64> = Vec::new();
-    let mut left = num_factors.iter();
-    let mut right = num_factors.iter();
+    let mut left = left.iter();
+    let mut right = right.iter();
     let mut l = left.next();
     let mut r = right.next();
     loop {
@@ -119,24 +131,23 @@ pub fn reduce_fraction(numerator: u64, denominator: u64) -> (u64, u64) {
             Ordering::Equal => {
                 common.push(*x);
                 l = left.next();
-                r = left.next();
+                r = right.next();
             }
             Ordering::Less => {
                 l = left.next();
             }
             Ordering::Greater => {
-                r = left.next();
+                r = right.next();
             }
         }
     }
 
-    let gcd = common.iter().fold(1, |x, acc| x * acc);
-    (numerator / gcd, denominator / gcd)
+    common
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::math::{factorize, round_to, PrimeIterator, reduce_fraction};
+    use crate::math::*;
 
     #[test]
     fn round_to_nickel() {
@@ -173,8 +184,26 @@ mod tests {
     }
 
     #[test]
-    fn reduce_factors() {
+    fn has_no_common_items() {
+        let a = vec![1, 3, 5, 9];
+        let b = vec![2, 4, 6, 8];
+        assert_eq!(common_items(a, b), vec![])
+    }
+
+    #[test]
+    fn has_common_items() {
+        let a = vec![1, 2, 3, 4, 5, 6];
+        let b = vec![1, 3, 5, 7, 9, 11];
+        assert_eq!(common_items(a, b), vec![1, 3, 5])
+    }
+
+    #[test]
+    fn reduce_18_over_6() {
         assert_eq!(reduce_fraction(18, 6), (3, 1));
+    }
+
+    #[test]
+    fn reduce_136_over_150() {
         assert_eq!(reduce_fraction(136, 150), (68, 75));
     }
 }
